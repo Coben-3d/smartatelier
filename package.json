@@ -1,0 +1,63 @@
+{
+  "name": "smartatelier",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3210",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 3210",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "export": "node --experimental-strip-types scripts/export.ts",
+    "setup": "node scripts/setup.mjs",
+    "connect": "node scripts/connect.mjs",
+    "doctor": "node --experimental-strip-types scripts/doctor.ts",
+    "launch": "node scripts/launch.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "release:pack": "node scripts/package.mjs",
+    "preview": "node scripts/preview.mjs"
+  },
+  "dependencies": {
+    "@openai/codex": "0.157.1",
+    "lucide-react": "1.48.0",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "0.35.5",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "prettier": "3.9.9",
+    "typescript": "7.0.2"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "files": [
+    "app/",
+    "lib/",
+    "scripts/",
+    "tests/",
+    "docs/",
+    ".github/",
+    "next.config.ts",
+    "tsconfig.json",
+    "next-env.d.ts",
+    ".gitignore",
+    ".nvmrc",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "Lancer.command",
+    "Lancer.bat",
+    "package-lock.json",
+    "project.config.json",
+    "AGENTS.md"
+  ]
+}

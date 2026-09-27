@@ -34,3 +34,7 @@ ChatGPT a été testé avec un compte Pro. Les connecteurs Claude et Gemini sont
 Application locale mono-utilisateur ; aucun hébergement public sécurisé ni synchronisation entre ordinateurs. Sauvegardez tout le dossier `data/` avant une mise à jour.
 
 Les guides Installation, Utilisation, FAQ et Validation sont inclus dans le dépôt. Les retours reproductibles et contributions sont bienvenus.
+
+Validation : 23 tests locaux et compilation de production réussis sur macOS. Les contrôles GitHub Actions n’ont pas pu démarrer ; compatibilité Windows/Linux non encore confirmée.
+
+[❤️ Soutenir les projets de Coben3D](https://www.paypal.com/donate/?hosted_button_id=S2MTT95UDGFZ2) — facultatif, SmartAtelier reste gratuit.

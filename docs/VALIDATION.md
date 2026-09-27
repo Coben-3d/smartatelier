@@ -39,3 +39,7 @@ Le 27 septembre 2026, un import via le bouton photo a été testé avec une illu
 - Encart de soutien et nom vérifiés dans le navigateur ; aucun paiement déclenché.
 - Sources distribuées par liste explicite : inventaires, médias personnels, fichiers de connexion, dépendances et fichiers temporaires exclus.
 - Nouveau nom SmartAtelier, guides GitHub et encart de soutien facultatif. La page de don PayPal du créateur est configurée ; aucun paiement déclenché.
+
+## Publication GitHub
+
+Le dépôt public est [Coben-3d/smartatelier](https://github.com/Coben-3d/smartatelier). Le workflow distant a été déclenché mais aucun job de test n’a pu démarrer. Les résultats macOS locaux ci-dessus restent les seules validations de plateforme ; Linux et Windows restent à confirmer.

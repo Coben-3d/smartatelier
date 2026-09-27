@@ -2,7 +2,7 @@
 
 Nom : **SmartAtelier** · dépôt suggéré : **smartatelier** · première bêta publique : **0.4.0**.
 
-Ce guide décrit une publication à effectuer depuis le dossier source propre fourni. Aucun dépôt distant n’est créé par les scripts du projet.
+Dépôt officiel : [Coben-3d/smartatelier](https://github.com/Coben-3d/smartatelier). Ce guide sert aussi aux prochaines publications depuis un dossier source propre. Aucun dépôt distant n’est créé par les scripts du projet.
 
 ## Présentation du dépôt
 
@@ -15,7 +15,7 @@ Ce guide décrit une publication à effectuer depuis le dossier source propre fo
 ## Éléments à finaliser
 
 - Le lien de don PayPal est configuré dans `project.config.json`, le README et `.github/FUNDING.yml` (voir [Soutien](SOUTIEN.md)).
-- Choisir le compte GitHub propriétaire et créer un dépôt vide, sans README ni licence générés par GitHub.
+- Le dépôt public est hébergé sur le compte Coben-3d. Pour un fork, choisissez votre propre compte et un dépôt vide.
 
 ## Contrôles locaux
 

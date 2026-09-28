@@ -8,6 +8,14 @@ Oui, le logiciel est gratuit et open source sous licence MIT. Le soutien PayPal 
 
 Non. L’application passe par les CLI officiels, avec votre propre compte. Elle ne remplace jamais une connexion refusée par une API payante. Le stock manuel fonctionne sans IA.
 
+## Est-ce le ChatGPT, Claude ou Gemini conversationnel ?
+
+SmartAtelier ne pilote pas leur site de discussion : il appelle **Codex CLI**, **Claude Code** ou **Gemini CLI** selon votre choix. Les demandes utilisent votre compte et consomment les quotas de cet outil. Sur Claude Pro/Max, les limites sont partagées avec vos conversations Claude. Gemini utilise son propre outil, jamais Codex. Voir [le tableau des connexions et quotas](IA-ET-QUOTAS.md).
+
+## Une correction manuelle consomme-t-elle du quota ?
+
+Les quantités, notes et recherches dans le stock sont traitées localement. Une revérification IA, une analyse de projet ou une recherche fabricant consomme du quota. L’enregistrement d’une bobine suffisamment renseignée peut lancer automatiquement la recherche de ses réglages ; cette recherche utilise aussi l’IA.
+
 ## Mes photos restent-elles sur mon ordinateur ?
 
 Les originaux, le stock et les résultats sont enregistrés localement. Pour une analyse, les vues sélectionnées sont envoyées au fournisseur choisi. Les informations de stock utiles sont également transmises pour un projet. Le fonctionnement IA n’est donc pas hors ligne.

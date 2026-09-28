@@ -8,6 +8,24 @@ Un inventaire local, en français, pour les composants électroniques et les bob
 
 > Version 0.4.0 bêta. Logiciel gratuit et open source (MIT). Choisissez ChatGPT (Codex), Claude (Claude Code) ou Gemini (Gemini CLI). Le stockage est local ; l’analyse utilise Internet et votre compte chez le fournisseur choisi. Projet indépendant de ces fournisseurs.
 
+## Quelle IA est utilisée, et quels quotas sont consommés ?
+
+**SmartAtelier utilise les outils officiels ci-dessous pour automatiser les demandes. Il ne pilote pas une conversation dans les sites ChatGPT, Claude ou Gemini.** « CLI » signifie simplement un programme installé sur votre ordinateur auquel l’application peut envoyer du texte et des images.
+
+| Choix dans SmartAtelier | Outil réellement lancé | Connexion nécessaire | Usage décompté |
+| --- | --- | --- | --- |
+| **ChatGPT / OpenAI** | **Codex CLI** (inclus avec le projet) | Compte ChatGPT autorisé à utiliser Codex | Limites d’usage Codex de votre compte, partagées avec vos autres usages Codex ; ce n’est pas une conversation classique sur chatgpt.com. |
+| **Claude** | **Claude Code** (à installer) | Compte Claude avec accès à Claude Code, notamment Pro/Max | Usage Claude Code ; sur Pro/Max, les limites sont **partagées avec vos conversations Claude**. |
+| **Gemini** | **Gemini CLI** (à installer) | **Login with Google**, compte éligible | Quotas Gemini CLI / Gemini Code Assist associés au compte ; ne pas les confondre avec les limites de l’application Gemini. |
+
+Sources : [connexion Codex](https://learn.chatgpt.com/docs/auth), [usage Codex](https://learn.chatgpt.com/docs/pricing), [limites Claude et Claude Code](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan), [quotas Gemini CLI](https://geminicli.com/docs/resources/quota-and-pricing/). Vérification : 28 septembre 2026.
+
+**Chaque analyse photo/vidéo, revérification, préparation de projet ou recherche fabricant consomme l’usage du fournisseur choisi.** Une vidéo contient plusieurs vues ; une recherche peut nécessiter plusieurs échanges. Il n’y a pas de quota IA supplémentaire offert par SmartAtelier. La recherche des réglages d’une bobine peut aussi démarrer automatiquement après l’enregistrement de ses caractéristiques.
+
+Le logiciel est gratuit et ne demande aucune clé API. Cela ne rend pas les services IA gratuits ou illimités : accès, abonnements, quotas et éventuels crédits supplémentaires restent ceux de votre fournisseur. SmartAtelier n’achète aucun crédit, ne change pas votre offre et ne bascule pas vers une API payante. Des crédits ou options de dépassement déjà activés sur votre compte peuvent toutefois s’appliquer selon ses règles.
+
+Gemini ne passe pas par Codex, et Claude non plus. Pour comprendre le fonctionnement, les actions locales et le suivi de consommation, consultez [IA, connexions et quotas](docs/IA-ET-QUOTAS.md). Les connecteurs Claude/Gemini restent expérimentaux dans cette bêta ; voir [les essais réellement effectués](docs/VALIDATION.md).
+
 ## Soutenir mon travail
 
 **Le projet reste gratuit.** Si SmartAtelier vous rend service, vous pouvez soutenir mon travail et m’aider à créer mes prochains projets. Merci pour chaque coup de pouce !
@@ -94,6 +112,7 @@ Les vues sélectionnées sont transmises au fournisseur choisi (OpenAI, Anthropi
 
 ## Guides
 
+- [IA, connexions et quotas](docs/IA-ET-QUOTAS.md)
 - [Questions fréquentes : CMS, tiroirs et limites](docs/FAQ.md)
 - [Soutien facultatif](docs/SOUTIEN.md)
 - [Installation et connexion](docs/INSTALLATION.md)

@@ -1,5 +1,7 @@
 # Installation et connexion
 
+Avant de connecter un compte, consultez [IA, connexions et quotas](IA-ET-QUOTAS.md) : **ChatGPT utilise Codex CLI, Claude utilise Claude Code, Gemini utilise Gemini CLI**. Les demandes consomment les limites du compte correspondant. Sur Claude Pro/Max, ces limites sont partagées avec les conversations Claude.
+
 ## macOS et Linux
 
 Installez Node.js 24 LTS. Téléchargez le ZIP GitHub, décompressez-le et ouvrez ce dossier dans un terminal. `node --version` doit afficher au moins 22.18.
@@ -12,7 +14,7 @@ npm run launch
 
 Ouvrez http://127.0.0.1:3210. Le premier lancement compile l’application. Les lancements suivants recompilent aussi pour éviter d’afficher une ancienne version après une mise à jour. Il n’est pas nécessaire d’installer l’app Codex de bureau ou un CLI global : une version de `@openai/codex` est verrouillée dans le projet.
 
-## Connexion ChatGPT
+## Connexion ChatGPT via Codex CLI
 
 Dans l’app, ouvrez **Connexion & modèles**, puis **Se connecter avec ChatGPT**. Le CLI officiel ouvre le navigateur. Terminez la connexion sur le domaine officiel, puis cliquez **Actualiser la connexion**. SmartAtelier ne demande et ne collecte pas votre mot de passe.
 
@@ -56,7 +58,7 @@ Arrêtez SmartAtelier et sauvegardez `data/`. Remplacez uniquement le code par l
 
 Cette version écoute seulement sur `127.0.0.1`, sans authentification applicative. Elle est destinée à un ordinateur personnel. Ne la publiez pas telle quelle derrière un accès Internet : aucune gestion d’utilisateurs ou isolation de comptes n’est fournie.
 
-## Claude et Gemini (0.3)
+## Claude Code et Gemini CLI
 
 Dans **Connexion & modèles**, choisissez votre fournisseur. Le statut n’envoie pas de photo. Utilisez la commande affichée pour terminer sa connexion officielle :
 

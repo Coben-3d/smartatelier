@@ -34,6 +34,9 @@ Choisissez **Automatique** pour utiliser le modèle compatible recommandé par l
 
 ## Windows
 
+**Version portable (sans installer Node.js) :** téléchargez `SmartAtelier-<version>-windows-x64.zip` dans les fichiers de la release, décompressez-le, puis suivez `LISEZMOI.md` (`Connexion.bat` puis `SmartAtelier.bat`). Le ZIP embarque Node.js, l’application compilée, Codex, Gemini CLI et FFmpeg ; Claude Code s’installe à part avec l’installateur officiel. Il est produit par le workflow `.github/workflows/windows-portable.yml`, qui démarre le serveur depuis le ZIP avant publication.
+
+
 Voie conseillée : WSL2 (Ubuntu), avec le projet et Node installés dans le système de fichiers Linux de WSL. Exécutez les mêmes commandes depuis WSL, puis ouvrez l’adresse locale dans le navigateur Windows. Installez FFmpeg dans WSL, pas uniquement dans Windows.
 
 Le lanceur `Lancer.bat` et l’appel du CLI via Node sont également prévus pour Windows natif, mais ce parcours n’a pas été validé sur une machine Windows. La disponibilité du CLI et de ses fonctions sous Windows dépend de sa version. Ne présentez pas cette voie comme certifiée avant test.

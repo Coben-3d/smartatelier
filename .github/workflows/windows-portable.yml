@@ -27,6 +27,25 @@ jobs:
       # Unit tests run in the Checks workflow; the smoke test below validates the ZIP.
       - run: npm run build
 
+      - name: Replace build links with real copies
+        # Next.js links server packages (sharp, Codex SDK) into .next/node_modules
+        # with absolute targets; they break once the folder is moved or zipped.
+        run: |
+          $links = @(Get-ChildItem .next/node_modules -Recurse -Depth 1 -Force |
+            Where-Object { $_.LinkType })
+          foreach ($link in $links) {
+            $target = @($link.Target)[0]
+            if (-not [IO.Path]::IsPathRooted($target)) {
+              $target = Join-Path $link.Parent.FullName $target
+            }
+            $target = (Resolve-Path $target).Path
+            [IO.Directory]::Delete($link.FullName, $false)
+            Copy-Item $target $link.FullName -Recurse
+            Write-Output "$($link.Name) <- $target"
+          }
+          $left = @(Get-ChildItem .next -Recurse -Force | Where-Object { $_.LinkType })
+          if ($left.Count) { throw "Liens restants : $($left.FullName -join ', ')" }
+
       - name: Embed Gemini CLI
         run: |
           npm install --prefix tools --no-audit --no-fund "@google/gemini-cli@$env:GEMINI_CLI_VERSION"

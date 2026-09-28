@@ -82,7 +82,12 @@ test("les modèles de chaque fournisseur restent séparés, anciens réglages co
   } finally {
     if (old === undefined) delete process.env.INVENTORY_DATA_DIR;
     else process.env.INVENTORY_DATA_DIR = old;
-    rmSync(dir, { recursive: true, force: true });
+    rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
   }
 });
 test("Gemini ACP : transmission image, assemblage JSON, refus des permissions et absence de clé API", async () => {
@@ -117,7 +122,12 @@ test("Gemini ACP : transmission image, assemblage JSON, refus des permissions et
     session.close();
     if (old === undefined) delete process.env.GEMINI_API_KEY;
     else process.env.GEMINI_API_KEY = old;
-    rmSync(dir, { recursive: true, force: true });
+    rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
   }
 });
 

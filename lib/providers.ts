@@ -120,8 +120,13 @@ async function inspect(provider: "claude" | "gemini"): Promise<Status> {
     };
   } finally {
     clearTimeout(timeout);
-    session.close();
-    rmSync(dir, { recursive: true, force: true });
+    await session.close();
+    rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
   }
 }
 export function parseJsonAnswer(text: string) {
@@ -327,7 +332,7 @@ export async function otherStructured(
         );
       result = parseJsonAnswer(output.answer);
     } finally {
-      session.close();
+      await session.close();
     }
   }
   // Domain callers validate all schemas and frame references before saving proposals.

@@ -119,7 +119,7 @@ test("Gemini ACP : transmission image, assemblage JSON, refus des permissions et
     assert.equal(settings.security.auth.enforcedType, "oauth-personal");
     assert.equal(settings.admin.mcp.enabled, false);
   } finally {
-    session.close();
+    await session.close();
     if (old === undefined) delete process.env.GEMINI_API_KEY;
     else process.env.GEMINI_API_KEY = old;
     rmSync(dir, {

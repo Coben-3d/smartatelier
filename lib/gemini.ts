@@ -52,6 +52,13 @@ export function geminiSession(
     diagnostic = (diagnostic + data).slice(-12000);
   });
   child.stdin.on("error", () => {});
+  // Resolves once the process is really gone: Windows keeps its folder locked until then.
+  const exited = new Promise<void>((resolve) => {
+    const done = () => resolve();
+    child.once("close", done);
+    child.once("error", done);
+    setTimeout(done, 5000).unref();
+  });
   const pending = new Map<
     number,
     { resolve: (v: any) => void; reject: (e: Error) => void }
@@ -145,6 +152,7 @@ export function geminiSession(
       lines.close();
       child.kill();
       fail();
+      return exited;
     },
     async open() {
       const info = await call("initialize", {

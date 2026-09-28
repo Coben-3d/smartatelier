@@ -24,7 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm test
+      # Unit tests run in the Checks workflow; the smoke test below validates the ZIP.
       - run: npm run build
 
       - name: Embed Gemini CLI

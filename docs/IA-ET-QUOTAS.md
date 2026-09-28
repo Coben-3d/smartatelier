@@ -2,7 +2,7 @@
 
 ## Conversation classique et connexion automatique
 
-Vous pouvez demander manuellement à un assistant d’identifier une photo dans son application de discussion. SmartAtelier automatise l’envoi des vues, récupère une réponse structurée et la présente pour validation. Il utilise pour cela un outil officiel du fournisseur, installé sur l’ordinateur : Codex CLI pour OpenAI, Claude Code pour Anthropic, Gemini CLI pour Google. Le nom de l’outil ne signifie pas que l’analyse de votre stock génère du code.
+Vous pouvez demander manuellement à un assistant d’identifier une photo dans son application de discussion. SmartAtelier automatise l’envoi des vues, récupère une réponse structurée et la présente pour validation. Il utilise pour cela un outil officiel du fournisseur, installé sur l’ordinateur : le SDK officiel `@openai/codex-sdk`, qui pilote Codex local, pour OpenAI, Claude Code pour Anthropic, Gemini CLI pour Google. Le nom de l’outil ne signifie pas que l’analyse de votre stock génère du code.
 
 Parcours : **photo ou frames vidéo → outil du fournisseur choisi → modèle IA distant → résultat structuré → correction et validation → inventaire local**. Les originaux restent conservés sur l’ordinateur ; les vues à analyser sont envoyées au fournisseur. Un fournisseur choisi n’est pas un relais vers les deux autres.
 
@@ -10,13 +10,15 @@ Parcours : **photo ou frames vidéo → outil du fournisseur choisi → modèle 
 
 | Choix | Compte et accès | Quota utilisé et consultation |
 | --- | --- | --- |
-| ChatGPT / OpenAI → Codex CLI | Connexion ChatGPT avec droit d’accès à Codex ; modèles compatibles proposés par ce compte. | Usage Codex du compte, partagé avec vos autres sessions Codex. Consultez le suivi d’usage Codex ou `/status` dans le CLI. Ne supposez pas que le quota de conversation classique est interchangeable. |
+| ChatGPT / OpenAI → SDK Codex → Codex local | Connexion ChatGPT avec droit d’accès à Codex ; modèles compatibles proposés par ce compte. | Usage Codex du compte, partagé avec vos autres sessions Codex. Consultez le suivi d’usage Codex ou `/status` dans le CLI. Ne supposez pas que le quota de conversation classique est interchangeable. |
 | Claude → Claude Code | Connexion au compte Claude avec accès Claude Code ; pour les particuliers, les offres Pro/Max incluent cet accès selon la documentation citée. | Sur Pro/Max, Claude et Claude Code partagent leurs limites : les analyses peuvent réduire ce qui reste pour vos conversations Claude. Consultez les paramètres d’utilisation de votre compte. |
 | Gemini → Gemini CLI | Connexion **Login with Google**. Une offre gratuite éligible existe via Gemini Code Assist pour les particuliers ; certaines offres payantes donnent des limites supérieures. | Quotas propres à Gemini CLI / Code Assist selon le compte et l’offre. Consultez `/stats model` dans Gemini CLI et les informations de votre offre. Ces limites ne sont pas celles promises pour le site de conversation Gemini. |
 
 L’accès à une application de discussion gratuite ou payante ne suffit pas à prouver l’accès à son outil CLI. Les offres, modèles, limites et conditions peuvent changer ; le fournisseur reste l’autorité. SmartAtelier ne calcule pas un nombre garanti de photos par abonnement.
 
-Sources officielles consultées le 28 septembre 2026 : [authentification Codex](https://learn.chatgpt.com/docs/auth), [consommation et limites Codex](https://learn.chatgpt.com/docs/pricing), [Claude Code avec Pro/Max et limites partagées](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan), [connexion Google](https://geminicli.com/docs/get-started/authentication/), [quotas et offres Gemini CLI](https://geminicli.com/docs/resources/quota-and-pricing/).
+Le SDK ne change pas la facturation ni les limites : il utilise la connexion personnelle du CLI. Le mot de passe et les jetons ChatGPT ne passent pas par SmartAtelier. Le stockage de connexion reste sous le contrôle du CLI officiel. Aucun compte partagé, contournement de quotas ou accès distant pour d’autres utilisateurs n’est prévu.
+
+Sources officielles consultées le 28 septembre 2026 : [SDK officiel](https://learn.chatgpt.com/docs/codex-sdk), [authentification Codex](https://learn.chatgpt.com/docs/auth), [consommation et limites Codex](https://learn.chatgpt.com/docs/pricing), [Claude Code avec Pro/Max et limites partagées](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan), [connexion Google](https://geminicli.com/docs/get-started/authentication/), [quotas et offres Gemini CLI](https://geminicli.com/docs/resources/quota-and-pricing/).
 
 ## Quelles actions utilisent l’IA ?
 

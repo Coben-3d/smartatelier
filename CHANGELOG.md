@@ -1,5 +1,11 @@
 # Historique
 
+## 0.4.1 — intégration Codex SDK
+
+- Tâches OpenAI migrées vers `@openai/codex-sdk` officiel : images, JSON structuré, revérification, projets et recherche fabricant.
+- Compte ChatGPT personnel conservé, sans lecture ni copie de ses identifiants ni fallback API.
+- Gestion des événements, erreurs, annulation et restrictions d’outils ; documentation de l’historique local du SDK.
+
 ## 0.4.0 — SmartAtelier, bêta communautaire
 
 - Nom SmartAtelier, identité visuelle et documentation pour GitHub.

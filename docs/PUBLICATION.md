@@ -6,7 +6,7 @@ Dépôt officiel : [Coben-3d/smartatelier](https://github.com/Coben-3d/smartatel
 
 ## Présentation du dépôt
 
-**Description :** Inventaire local de composants électroniques et filaments 3D. Photos, vidéos, couleurs, rangement et projets, avec validation humaine et assistants IA via leurs CLI.
+**Description :** Inventaire local de composants électroniques et filaments 3D. Photos, vidéos, couleurs, rangement et projets, avec validation humaine et assistants IA via le SDK Codex et les CLI officiels.
 
 **Sujets :** `inventory`, `electronics`, `3d-printing`, `filament`, `local-first`, `nextjs`, `sqlite`, `codex`, `claude-code`, `gemini-cli`.
 
@@ -29,7 +29,7 @@ npm run release:check
 npm run release:pack
 ```
 
-L’archive `dist/smartatelier-0.4.0.tgz` est construite à partir d’une liste d’inclusion. Elle contient les sources, guides et ressources visuelles génériques, sans base SQLite, photos personnelles, identifiants ni sorties réelles d’analyse.
+L’archive `dist/smartatelier-0.4.1.tgz` est construite à partir d’une liste d’inclusion. Elle contient les sources, guides et ressources visuelles génériques, sans base SQLite, photos personnelles, identifiants ni sorties réelles d’analyse.
 
 ## Envoyer les sources
 
@@ -52,7 +52,7 @@ Vérifiez la liste : pas de `data/`, `data-preview/`, `.env`, média privé, cl�
 Créez ensuite un commit avec votre identité Git habituelle :
 
 ```sh
-git commit -m "Préparer SmartAtelier 0.4.0 beta"
+git commit -m "Préparer SmartAtelier 0.4.1 beta"
 ```
 
 Ajoutez comme remote l’URL exacte du dépôt vide créé sur **votre** compte, puis poussez `main`. Ne copiez pas une URL de compte d’exemple.
@@ -63,6 +63,6 @@ Ajoutez comme remote l’URL exacte du dépôt vide créé sur **votre** compte,
 - Activer Issues et le signalement privé des vulnérabilités.
 - Activer Sponsorships après ajout du lien PayPal.
 - Attendre le workflow de vérification sur macOS, Linux et Windows. Les tests locaux ne remplacent pas ces résultats distants.
-- Créer une release **v0.4.0**, cocher **préversion**, utiliser [le texte de release](RELEASE-0.4.0.md) et joindre l’archive source.
+- Créer une release **v0.4.1**, cocher **préversion**, utiliser [le texte de release](RELEASE-0.4.1.md) et joindre l’archive source.
 
 Les connecteurs Claude/Gemini sont expérimentaux : ne les annoncer comme testés de bout en bout qu’après des essais réussis sur des comptes éligibles. Aucun compte Free/Plus/Pro n’est promis illimité. Le stock manuel est utilisable indépendamment des assistants.

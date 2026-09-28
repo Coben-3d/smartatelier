@@ -95,7 +95,9 @@ export function selectModel(
           : choices[0],
   };
 }
-export async function accountCatalog() {
+async function withCodexServer<T>(
+  work: (call: (method: string, params: object) => Promise<any>) => Promise<T>,
+): Promise<T> {
   const command = codexInvocation([
     "-c",
     "features.context_management=false",
@@ -151,10 +153,19 @@ export async function accountCatalog() {
       clientInfo: {
         name: "smartatelier",
         title: "SmartAtelier",
-        version: "0.2.0",
+        version: "0.4.1",
       },
     });
     child.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
+    return await work(call);
+  } finally {
+    clearTimeout(timer);
+    lines.close();
+    child.kill();
+  }
+}
+export async function accountCatalog() {
+  return withCodexServer(async (call) => {
     const { account } = await call("account/read", { refreshToken: false });
     if (account?.type !== "chatgpt")
       return {
@@ -199,12 +210,21 @@ export async function accountCatalog() {
       message:
         "Connecté à ChatGPT. Les quotas et autorisations du compte s’appliquent.",
     };
-  } finally {
-    clearTimeout(timer);
-    lines.close();
-    child.kill();
-  }
+  });
 }
+// Read effective names only: never persist/return config values or credentials.
+// An empty mcp_servers override merges with user config; it does NOT clear it.
+export async function configuredCodexMcpServers(
+  cwd: string,
+): Promise<string[]> {
+  return withCodexServer(async (call) => {
+    const result = await call("config/read", { cwd, includeLayers: false });
+    if (!result?.config || typeof result.config !== "object")
+      throw Error("Configuration Codex indisponible : analyse annulée.");
+    return Object.keys(result.config.mcp_servers || {});
+  });
+}
+
 type Catalog = Awaited<ReturnType<typeof accountCatalog>>;
 const state = globalThis as unknown as {
   stockCatalog?: { until: number; value: Catalog };

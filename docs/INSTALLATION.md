@@ -1,6 +1,6 @@
 # Installation et connexion
 
-Avant de connecter un compte, consultez [IA, connexions et quotas](IA-ET-QUOTAS.md) : **ChatGPT utilise Codex CLI, Claude utilise Claude Code, Gemini utilise Gemini CLI**. Les demandes consomment les limites du compte correspondant. Sur Claude Pro/Max, ces limites sont partagées avec les conversations Claude.
+Avant de connecter un compte, consultez [IA, connexions et quotas](IA-ET-QUOTAS.md) : **ChatGPT utilise le SDK officiel qui pilote Codex local, Claude utilise Claude Code, Gemini utilise Gemini CLI**. Les demandes consomment les limites du compte correspondant. Sur Claude Pro/Max, ces limites sont partagées avec les conversations Claude.
 
 ## macOS et Linux
 
@@ -12,9 +12,9 @@ npm run setup
 npm run launch
 ```
 
-Ouvrez http://127.0.0.1:3210. Le premier lancement compile l’application. Les lancements suivants recompilent aussi pour éviter d’afficher une ancienne version après une mise à jour. Il n’est pas nécessaire d’installer l’app Codex de bureau ou un CLI global : une version de `@openai/codex` est verrouillée dans le projet.
+Ouvrez http://127.0.0.1:3210. Le premier lancement compile l’application. Les lancements suivants recompilent aussi pour éviter d’afficher une ancienne version après une mise à jour. Il n’est pas nécessaire d’installer l’app Codex de bureau ou un CLI global : `@openai/codex-sdk` et `@openai/codex` sont tous deux verrouillés en version 0.157.1 dans le projet et installés par `npm ci`.
 
-## Connexion ChatGPT via Codex CLI
+## Connexion personnelle ChatGPT / Codex
 
 Dans l’app, ouvrez **Connexion & modèles**, puis **Se connecter avec ChatGPT**. Le CLI officiel ouvre le navigateur. Terminez la connexion sur le domaine officiel, puis cliquez **Actualiser la connexion**. SmartAtelier ne demande et ne collecte pas votre mot de passe.
 
@@ -25,6 +25,8 @@ npm run connect
 ```
 
 Autre possibilité depuis le terminal : `npm run connect -- --device`. Ce flux exige que l’authentification par appareil soit autorisée pour le compte. Ne partagez jamais le code de connexion. SmartAtelier n’enregistre pas ce code.
+
+Les analyses sont lancées par le SDK. La connexion officielle (`codex login`) et la lecture du compte/catalogue restent assurées par le CLI et son protocole app-server : le SDK ne propose pas ces opérations. Vous n’avez aucune clé à copier ni fichier de connexion à importer.
 
 Une connexion CLI existante par clé API n’est pas acceptée. Reconnectez-vous avec ChatGPT. Cette connexion est partagée avec vos autres usages de Codex sur cet ordinateur ; SmartAtelier ne modifie pas votre fichier de configuration global et ne lance pas de déconnexion automatique.
 

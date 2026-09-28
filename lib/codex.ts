@@ -1,14 +1,12 @@
-import { run } from "./process.ts";
+import { runCodexStructured } from "./codex-sdk.ts";
 import { otherStructured } from "./providers.ts";
 import {
-  codexInvocation,
-  subscriptionEnv,
+  configuredCodexMcpServers,
   connectionStatus,
   readSettings,
   selectModel,
 } from "./connection.ts";
-import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import {
@@ -18,9 +16,6 @@ import {
   validateAnalysis,
   type Frame,
 } from "./schema.ts";
-export function codexBinary() {
-  return codexInvocation([]).file;
-}
 export { run } from "./process.ts";
 export async function authStatus() {
   return connectionStatus();
@@ -54,30 +49,8 @@ export async function structured(
     );
   const dir = path.join(root, "runs", randomUUID());
   mkdirSync(dir, { recursive: true });
-  const schemaFile = path.join(dir, "schema.json"),
-    output = path.join(dir, "result.json");
-  writeFileSync(schemaFile, JSON.stringify(schema));
+  writeFileSync(path.join(dir, "schema.json"), JSON.stringify(schema));
   writeFileSync(path.join(dir, "prompt.txt"), prompt);
-  const args = [
-    "exec",
-    "--ignore-user-config",
-    "--ephemeral",
-    "--skip-git-repo-check",
-    "--sandbox",
-    "read-only",
-    "-c",
-    'forced_login_method="chatgpt"',
-    "-c",
-    "features.shell_tool=false",
-    "-C",
-    dir,
-    "--output-schema",
-    schemaFile,
-    "--output-last-message",
-    output,
-  ];
-  args.push("-c", `web_search="${options.webSearch ? "live" : "disabled"}"`);
-  if (options.webSearch) args.push("--json");
   const selected = selectModel(
     auth.models,
     options.model || process.env.CODEX_MODEL || settings.model || undefined,
@@ -85,9 +58,6 @@ export async function structured(
     options.effort,
   );
   const model = selected.model;
-  if (selected.effort)
-    args.push("-c", `model_reasoning_effort="${selected.effort}"`);
-  args.push("-m", model);
   writeFileSync(
     path.join(dir, "settings.json"),
     JSON.stringify({
@@ -97,33 +67,24 @@ export async function structured(
       createdAt: new Date().toISOString(),
     }),
   );
-  for (const f of frames) args.push("-i", f.path);
-  args.push("-");
-  const command = codexInvocation(args);
-  const execution = await run(command.file, command.args, {
-    input: prompt,
-    env: subscriptionEnv(),
-    timeout: 240000,
+  const mcpServers = await configuredCodexMcpServers(dir);
+  const result = await runCodexStructured({
+    prompt,
+    schema,
+    frames,
+    workingDirectory: dir,
+    model,
+    effort: selected.effort,
+    webSearch: Boolean(options.webSearch),
+    mcpServers,
   });
-  if (options.webSearch) {
-    writeFileSync(path.join(dir, "events.jsonl"), execution.stdout);
-    const events = execution.stdout.split("\n").flatMap((line) => {
-      try {
-        return [JSON.parse(line)];
-      } catch {
-        return [];
-      }
-    });
-    if (
-      !events.some(
-        (e) => e.type === "item.completed" && e.item?.type === "web_search",
-      )
-    )
-      throw Error(
-        "Aucune recherche web effectuée. Relancez la recherche fabricant.",
-      );
-  }
-  return JSON.parse(readFileSync(output, "utf8"));
+  writeFileSync(path.join(dir, "result.json"), JSON.stringify(result.value));
+  // Store only the completion/usage and web evidence, not arbitrary tool output.
+  writeFileSync(
+    path.join(dir, "events.jsonl"),
+    result.evidence.map((e) => JSON.stringify(e)).join("\n") + "\n",
+  );
+  return result.value;
 }
 export async function analyzeFrames(frames: Frame[], root: string) {
   if (!frames.length || frames.length > 24)

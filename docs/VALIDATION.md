@@ -1,6 +1,6 @@
 # État des validations
 
-Version 0.4.0 bêta préparée le 27 septembre 2026.
+Version courante : 0.4.1 bêta. Historique des validations depuis le 27 septembre 2026.
 
 ## Vérifié
 
@@ -43,3 +43,12 @@ Le 27 septembre 2026, un import via le bouton photo a été testé avec une illu
 ## Publication GitHub
 
 Le dépôt public est [Coben-3d/smartatelier](https://github.com/Coben-3d/smartatelier). Le workflow distant a été déclenché mais aucun job de test n’a pu démarrer. Les résultats macOS locaux ci-dessus restent les seules validations de plateforme ; Linux et Windows restent à confirmer.
+
+## Migration SDK Codex — 28 septembre 2026
+
+- `@openai/codex-sdk` et CLI verrouillés en 0.157.1. 32 tests locaux réussis, dont contrat SDK multimodal, sortie structurée, erreurs fatales/non fatales, annulation, quotas, preuve de recherche web et lecture du catalogue MCP via app-server dans un profil temporaire sans compte.
+- Essai réel avec un compte ChatGPT Pro : une illustration contrôlée de trois bobines a produit trois fiches distinctes, couleurs rouge/bleue/verte et trois observations avec cadres, validées par les schémas métier. Aucun ajout au stock utilisateur. Cela ne mesure pas la fiabilité sur photos réelles.
+- Compilation de production réussie. Un projet texte a été créé et analysé via la route HTTP de la version compilée, avec données de test isolées : résultat structuré prêt et liste de matériel attendue.
+- Aperçu local redémarré avec le SDK installé ; les 13 fiches de l’inventaire ont été comparées avant/après, sans modification.
+- Recherche fabricant réelle via SDK validée avec le moteur d’outils activé uniquement pour le web : le parcours complet `researchFilament()` a renvoyé une correspondance PLA Basic et dix paramètres avec deux sources fabricant, après appels web confirmés et validation du schéma. Le contrôle technique des recommandations pour chaque imprimante reste nécessaire. Les réponses sans événement web terminé sont refusées.
+- Les tests des autres offres et des autres systèmes restent à effectuer ; Claude/Gemini ne sont pas modifiés par cette migration.

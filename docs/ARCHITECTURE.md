@@ -4,11 +4,27 @@ Next.js sert l’interface React et les routes locales. SQLite (`node:sqlite`) c
 
 ## Accès IA
 
-`lib/connection.ts` appelle le protocole stdio officiel de Codex : `initialize`, `account/read`, `model/list`. Il transmet au navigateur uniquement le statut, le type d’offre et les caractéristiques des modèles ; aucun email, token ou identifiant de compte. Les résultats du catalogue sont mis en cache 60 secondes.
+Le chemin OpenAI est **SmartAtelier local → `@openai/codex-sdk` → Codex local → compte ChatGPT personnel → limites Codex de ce compte**. SDK et CLI sont verrouillés en 0.157.1. Le SDK fournit le transport des tâches ; SmartAtelier ne construit plus de commande `codex exec` et ne parse plus lui-même son flux stdout.
 
-`lib/codex.ts` lance `codex exec` avec images, sortie JSON structurée, sandbox lecture seule, outils shell désactivés et authentification ChatGPT imposée. Les variables de clé API sont retirées de l’environnement du sous-processus. Le modèle est choisi parmi les modèles annoncés, en tenant compte des entrées image et des efforts autorisés. Les règles du compte sont encore vérifiées par le fournisseur lors de l’exécution. Pas de fallback vers une API payante.
+- `lib/codex.ts` conserve le routage fournisseur, la vérification d’une connexion ChatGPT, la sélection d’un modèle compatible, les prompts et les schémas métier.
+- `lib/codex-sdk.ts` crée un `Codex`, un nouveau `startThread({ workingDirectory, ... })` par tâche, puis appelle `runStreamed(input, { outputSchema, signal })`. Les images sont des entrées `local_image` dans leur ordre d’origine. Aucun thread n’est repris entre analyses.
+- Les événements typés du SDK permettent de refuser une erreur, un tour incomplet, une réponse non JSON ou une recherche fabricant sans événement web terminé. Délai de quatre minutes avec annulation. Les sorties restent soumises aux schémas Zod et à la validation humaine avant intégration au stock. L’analyse photo, les frames vidéo, la revérification, les projets et la recherche filament passent tous par ce point commun.
 
-La recherche fabricant autorise uniquement l’outil web ; les journaux doivent prouver un appel web avant que son résultat soit accepté. Les recommandations comportent des sources. La qualité factuelle et la correspondance produit demandent encore la vérification humaine.
+### Compte et configuration
+
+Le SDK ne fournit pas d’API de connexion ou de catalogue. `lib/connection.ts` conserve donc le protocole stdio officiel app-server : `initialize`, `account/read`, `model/list`, ainsi que `codex login` pour ouvrir la connexion officielle. Il ne transmet au navigateur que le statut, l’offre et les caractéristiques des modèles, jamais l’email, les jetons ou les identifiants du compte. Le catalogue est mis en cache 60 secondes.
+
+Le sous-processus reçoit un environnement filtré sans clés API et `forced_login_method="chatgpt"`, avec le fournisseur intégré `openai`. Ni `apiKey` ni `baseUrl` ne sont fournis au SDK. SmartAtelier ne lit, copie ou stocke aucun fichier d’authentification ChatGPT. Codex conserve la responsabilité de sa connexion et de son renouvellement. Chaque utilisateur utilise son propre compte, sans relais distant, compte partagé, achat automatique ou contournement des limites. Les refus du fournisseur sont remontés sans changement automatique de modèle ou de fournisseur.
+
+### Restrictions et historique
+
+Chaque tâche utilise le sandbox lecture seule et refuse les demandes d’approbation (`approvalPolicy: "never"`). Shell, hooks, notifications externes, apps, plugins, sous-agents, navigateur et outils de génération sont désactivés pour cette exécution. L’accès web est désactivé sauf pour la recherche fabricant. Le moteur officiel `code_mode_host` est activé uniquement pendant cette recherche : les outils web des modèles actuels en ont besoin. Les restrictions shell, MCP, plugins et fichiers restent identiques. Les recommandations comportent des sources, qui restent à vérifier humainement.
+
+Le SDK 0.157.1 ne propose ni `--ignore-user-config` ni `--ephemeral`. Nous ne lui ajoutons pas de lanceur shell détourné : les restrictions sont transmises par ses options officielles. Comme une table MCP vide ne supprime pas les entrées héritées, `config/read` lit les noms des serveurs effectifs pour le dossier de travail, puis le SDK les désactive individuellement. Les valeurs de cette configuration ne sont ni conservées ni exposées. Une configuration illisible annule la tâche. Les réglages globaux de l’utilisateur ne sont pas modifiés ; les exigences administrateur restent applicables.
+
+L’historique `history.jsonl` et la génération de mémoire sont désactivés pour ces tâches, **mais cela ne rend pas les sessions éphémères** : le CLI peut conserver leurs transcriptions dans son dossier local de sessions. Ces fichiers peuvent contenir prompts, réponses et informations sur les médias. Ils restent hors du dépôt et de l’export d’inventaire. Aucune promesse d’absence de traces locales n’est faite.
+
+Références : [SDK officiel](https://learn.chatgpt.com/docs/codex-sdk), [authentification](https://learn.chatgpt.com/docs/auth), [configuration](https://learn.chatgpt.com/docs/config-file/config-reference). Les limites de transport ci-dessus ont été vérifiées dans le paquet SDK installé.
 
 ## Données
 

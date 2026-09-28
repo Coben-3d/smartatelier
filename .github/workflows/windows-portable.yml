@@ -30,9 +30,8 @@ jobs:
       - name: Embed Gemini CLI
         run: |
           npm install --prefix tools --no-audit --no-fund "@google/gemini-cli@$env:GEMINI_CLI_VERSION"
-          if (-not (Test-Path "tools/node_modules/@google/gemini-cli/dist/index.js")) {
-            throw "Point d'entrée Gemini CLI introuvable : vérifiez GEMINI_CLI_VERSION."
-          }
+          # Same lookup as the app (lib/provider-cli.ts), so the ZIP is checked the way it will be used.
+          node -e "import('./lib/provider-cli.ts').then(m => { const e = m.packageEntry('tools/node_modules/@google/gemini-cli', 'gemini'); if (!e) { console.error('Point d entree Gemini CLI introuvable'); process.exit(1) } console.log('Gemini CLI : ' + e) })"
 
       - name: Embed FFmpeg (LGPL build)
         run: |

@@ -1,6 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, readFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  rmSync,
+  readFileSync,
+  mkdirSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import {
@@ -10,6 +16,7 @@ import {
   parseJsonAnswer,
 } from "../lib/providers.ts";
 import { geminiSession } from "../lib/gemini.ts";
+import { packageEntry } from "../lib/provider-cli.ts";
 import {
   readSettings,
   writeSettings,
@@ -82,7 +89,12 @@ test("les modèles de chaque fournisseur restent séparés, anciens réglages co
   } finally {
     if (old === undefined) delete process.env.INVENTORY_DATA_DIR;
     else process.env.INVENTORY_DATA_DIR = old;
-    rmSync(dir, { recursive: true, force: true });
+    rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
   }
 });
 test("Gemini ACP : transmission image, assemblage JSON, refus des permissions et absence de clé API", async () => {
@@ -114,10 +126,15 @@ test("Gemini ACP : transmission image, assemblage JSON, refus des permissions et
     assert.equal(settings.security.auth.enforcedType, "oauth-personal");
     assert.equal(settings.admin.mcp.enabled, false);
   } finally {
-    session.close();
+    await session.close();
     if (old === undefined) delete process.env.GEMINI_API_KEY;
     else process.env.GEMINI_API_KEY = old;
-    rmSync(dir, { recursive: true, force: true });
+    rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
   }
 });
 
@@ -134,4 +151,32 @@ test("session Claude expirée : erreur exploitable, sans exposer la réponse bru
       ),
     /Session Claude expirée/,
   );
+});
+
+test("point d’entrée des CLI lu dans package.json, ancien chemin en secours", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "stock-cli-"));
+  const write = (file: string, content = "") => {
+    mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+    writeFileSync(path.join(root, file), content);
+  };
+  try {
+    write("bundled/package.json", '{"bin":{"gemini":"bundle/gemini.js"}}');
+    write("bundled/bundle/gemini.js");
+    assert.equal(
+      packageEntry(path.join(root, "bundled"), "gemini"),
+      path.join(root, "bundled/bundle/gemini.js"),
+    );
+    write("legacy/package.json", "{}");
+    write("legacy/dist/index.js");
+    assert.equal(
+      packageEntry(path.join(root, "legacy"), "gemini"),
+      path.join(root, "legacy/dist/index.js"),
+    );
+    write("native/package.json", '{"bin":{"claude":"bin/claude.exe"}}');
+    write("native/bin/claude.exe");
+    assert.equal(packageEntry(path.join(root, "native"), "claude"), null);
+    assert.equal(packageEntry(path.join(root, "absent"), "gemini"), null);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

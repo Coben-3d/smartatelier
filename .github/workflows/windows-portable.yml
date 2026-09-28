@@ -1,0 +1,116 @@
+# Builds a portable Windows ZIP: embedded Node.js, prebuilt app, Codex,
+# Gemini CLI and FFmpeg. Claude Code is proprietary and is not redistributed:
+# users install it with Anthropic's native installer (no Node.js needed).
+name: Windows portable
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+permissions:
+  contents: write
+env:
+  # Protocol version examined in docs/INSTALLATION.md.
+  GEMINI_CLI_VERSION: "0.42.0"
+jobs:
+  portable:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Unit tests run in the Checks workflow; the smoke test below validates the ZIP.
+      - run: npm run build
+
+      - name: Replace build links with real copies
+        # Next.js links server packages (sharp, Codex SDK) into .next/node_modules
+        # with absolute targets; they break once the folder is moved or zipped.
+        run: |
+          $links = @(Get-ChildItem .next/node_modules -Recurse -Depth 1 -Force |
+            Where-Object { $_.LinkType })
+          foreach ($link in $links) {
+            $target = @($link.Target)[0]
+            if (-not [IO.Path]::IsPathRooted($target)) {
+              $target = Join-Path $link.Parent.FullName $target
+            }
+            $target = (Resolve-Path $target).Path
+            [IO.Directory]::Delete($link.FullName, $false)
+            Copy-Item $target $link.FullName -Recurse
+            Write-Output "$($link.Name) <- $target"
+          }
+          $left = @(Get-ChildItem .next -Recurse -Force | Where-Object { $_.LinkType })
+          if ($left.Count) { throw "Liens restants : $($left.FullName -join ', ')" }
+
+      - name: Embed Gemini CLI
+        run: |
+          npm install --prefix tools --no-audit --no-fund "@google/gemini-cli@$env:GEMINI_CLI_VERSION"
+          # Same lookup as the app (lib/provider-cli.ts), so the ZIP is checked the way it will be used.
+          node -e "import('./lib/provider-cli.ts').then(m => { const e = m.packageEntry('tools/node_modules/@google/gemini-cli', 'gemini'); if (!e) { console.error('Point d entree Gemini CLI introuvable'); process.exit(1) } console.log('Gemini CLI : ' + e) })"
+
+      - name: Embed FFmpeg (LGPL build)
+        run: |
+          $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip"
+          Invoke-WebRequest $url -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg-tmp
+          $root = (Get-ChildItem ffmpeg-tmp -Directory | Select-Object -First 1).FullName
+          New-Item -ItemType Directory ffmpeg | Out-Null
+          Copy-Item "$root/bin/ffmpeg.exe", "$root/bin/ffprobe.exe" ffmpeg/
+          Copy-Item "$root/LICENSE.txt" ffmpeg/LICENSE.txt -ErrorAction SilentlyContinue
+
+      - name: Assemble portable folder
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $name = "SmartAtelier-$version-windows-x64"
+          $out = Join-Path $env:RUNNER_TEMP $name
+          New-Item -ItemType Directory $out | Out-Null
+          Remove-Item .next/cache -Recurse -Force -ErrorAction SilentlyContinue
+          foreach ($item in @(".next", "node_modules", "tools", "ffmpeg", "app", "lib",
+                              "scripts", "docs", "package.json", "package-lock.json",
+                              "next.config.ts", "tsconfig.json", "next-env.d.ts",
+                              "project.config.json", "README.md", "LICENSE", "CHANGELOG.md")) {
+            Move-Item $item $out
+          }
+          $nodeExe = (Get-Command node).Source
+          New-Item -ItemType Directory "$out/node" | Out-Null
+          Copy-Item $nodeExe "$out/node/node.exe"
+          Copy-Item (Join-Path (Split-Path $nodeExe) "LICENSE") "$out/node/LICENSE" -ErrorAction SilentlyContinue
+          Copy-Item "$out/scripts/windows/*.bat", "$out/scripts/windows/LISEZMOI.md" $out
+          7z a -tzip -mx=5 "$env:RUNNER_TEMP/$name.zip" $out | Out-Null
+          "ZIP_NAME=$name" >> $env:GITHUB_ENV
+          "ZIP_PATH=$env:RUNNER_TEMP/$name.zip" >> $env:GITHUB_ENV
+
+      - name: Smoke test from a different location
+        run: |
+          $smoke = Join-Path $env:RUNNER_TEMP "smoke test"
+          Expand-Archive $env:ZIP_PATH -DestinationPath $smoke
+          $dir = Join-Path $smoke $env:ZIP_NAME
+          $env:INVENTORY_DATA_DIR = Join-Path $env:RUNNER_TEMP "smoke-data"
+          $env:PATH = "$dir\node;$dir\ffmpeg;$dir\tools;$env:PATH"
+          & "$dir\ffmpeg\ffprobe.exe" -version | Select-Object -First 1
+          $server = Start-Process -FilePath "$dir\node\node.exe" -WorkingDirectory $dir -PassThru `
+            -ArgumentList "node_modules\next\dist\bin\next", "start", "--hostname", "127.0.0.1", "--port", "3210"
+          $ok = $false
+          for ($i = 0; $i -lt 30 -and -not $ok; $i++) {
+            Start-Sleep 2
+            try { $ok = (Invoke-WebRequest http://127.0.0.1:3210 -UseBasicParsing).StatusCode -eq 200 } catch {}
+          }
+          Stop-Process $server -Force
+          if (-not $ok) { throw "Le serveur portable n'a pas répondu." }
+          Write-Output "Serveur portable OK."
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: ${{ env.ZIP_PATH }}
+          compression-level: 0
+
+      - name: Attach to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "$env:ZIP_PATH" --clobber
